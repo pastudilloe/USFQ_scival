@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>USFQ &amp; Peers — SciVal Dashboard (2019–2025)</title>
+<style>
+    :root {
+      --bg: #0b1020;
+      --panel: #12182b;
+      --ink: #e7ecff;
+      --muted: #a8b3d1;
+      --accent: #5aa9ff;
+      --accent-2: #7c4dff;
+      --border: #22304f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      position: sticky; top: 0; z-index: 1000;
+      background: linear-gradient(180deg, rgba(11,16,32,0.95), rgba(11,16,32,0.75));
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    .title { display: flex; align-items: baseline; gap: .75rem; }
+    .title h1 { font-size: 1.35rem; margin: 0; }
+    .title .tag { font-size: .85rem; color: var(--muted); padding: .15rem .5rem; border: 1px solid var(--border); border-radius: 999px; }
+    .grid { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; }
+    nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 80px); overflow: auto; padding-right: .5rem; }
+    nav .search { width: 100%; margin-bottom: .5rem; }
+    nav input[type=search] { width: 100%; padding: .5rem .75rem; border-radius: .5rem; border: 1px solid var(--border); background: #0e1430; color: var(--ink); }
+    .toc a { display: block; padding: .35rem .5rem; border-radius: .4rem; color: var(--muted); }
+    .toc a:hover { background: #0f1838; color: var(--ink); }
+    .toc .sect { margin-top: .4rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    main { padding-bottom: 4rem; }
+    section.card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1rem 1rem 0.5rem 1rem; margin-bottom: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    section.card h2 { margin: .25rem 0 .5rem 0; font-size: 1.1rem; }
+    .meta { color: var(--muted); font-size: .9rem; }
+    .desc { color: var(--ink); font-size: .95rem; margin: .35rem 0 .75rem 0; }
+    .frame-wrap {
+      position: relative; background: #0a0f26; border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin: .5rem 0 1rem;
+    }
+    iframe.plot { width: 100%; height: 680px; border: 0; display: block; }
+    .frame-actions { display: flex; gap: .5rem; justify-content: flex-end; padding: .5rem; border-top: 1px solid var(--border); }
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      border: 1px solid var(--border); background: #0e1631; color: var(--ink);
+      padding: .35rem .6rem; border-radius: 8px; cursor: pointer;
+    }
+    .btn:hover { background: #132048; }
+    .pill { display: inline-block; font-size: .75rem; border: 1px solid var(--border); padding: .05rem .45rem; border-radius: 999px; color: var(--muted); }
+    footer { color: var(--muted); border-top: 1px solid var(--border); padding: 1.5rem 0; margin-top: 1rem; }
+    .note { font-size: .9rem; color: var(--muted); }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: .85rem; }
+    .hidden { display: none; }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      nav { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+<header>
+<div class="wrap title">
+<h1>USFQ &amp; Peers — SciVal Dashboard (2019–2025)</h1>
+<span class="tag">by: <a href="https://www.usfqdatahub.org" target="_blank" rel="noopener">USFQ Data Hub</a></span>
+</div>
+</header>
+<div class="wrap grid">
+<nav>
+<input aria-label="Filter sections" class="search" id="tocSearch" placeholder="Filter sections…" type="search"/>
+<div class="toc" id="toc">
+<div class="sect">Productivity</div>
+<a href="#A">A. Total Scholarly Output</a>
+<a href="#B">B. CAGR in Publications</a>
+<a href="#C">C. YoY Growth</a>
+<a href="#D">D. Publications per Active Author</a>
+<div class="sect">Field Productivity</div>
+<a href="#E">E. Publication Distribution by Field</a><a href="#H">H. Field Concentration (HHI)</a>
+<div class="sect">Impact &amp; Quality</div>
+<a href="#I">I. FWCI (Avg)</a>
+<a href="#J">J. FWCI by Field</a>
+<a href="#K">K. Citations per Publication</a>
+<a href="#L">L. Outputs in Top Citation Percentiles</a>
+<a href="#M">M. h-index</a>
+<div class="sect">Journal / OA</div>
+<a href="#N">N. SJR &amp; Percentile</a>
+<a href="#O">O. CiteScore Percentile</a>
+<a href="#P">P. SNIP</a><div class="sect">Broader Impact</div>
+<a href="#R">R. Field-Weighted View Impact</a>
+<a href="#S">S. Policy Citations</a>
+<a href="#T">T. Patent Families</a>
+<a href="#U">U. SDG Alignment</a>
+<div class="sect">Collaboration</div>
+<a href="#V">V. International Co-authorship</a>
+<a href="#W">W. Institutional Collaboration</a>
+<a href="#X">X. Avg # Co-authors</a>
+<a href="#Y">Y. Intl Collaboration Impact Premium</a>
+<div class="sect">Authors</div><div class="sect">Talent</div><div class="sect">Positioning</div><a href="#AH">AH. Relative Growth Index</a>
+<a href="#AI">AI. Quality-Adjusted Output</a>
+<div class="sect">Portfolio</div>
+<a href="#AJ">AJ. Topic Prominence Percentile</a></div>
+<div class="note" style="margin-top:.75rem">
+      </div>
+</nav>
+<main id="content">
+<!-- Helper for consistent section cards -->
+<!-- For each section below:
+           1) Update the small description (copied from the PDF).
+           2) Set the iframe src to your HTML plot file (or leave blank for now).
+           3) The "Open plot" button will open the same src in a new tab. -->
+<!-- PRODUCTIVITY -->
+<section class="card" data-section="A" id="A">
+<h2>A. Total Scholarly Output (2019–2025)</h2>
+<div class="meta">Category: Productivity</div>
+<div class="desc"><strong>What it measures:</strong> Total number of publications per university per year (2019–2025).<br/><strong>Why it’s important:</strong> Baseline capacity and growth trend; shows expansion or contraction of research footprint.<br/><strong>How to calculate / formula:</strong> Count publications by year from Dataset 2, grouped by institution; build yearly time series.<br/><strong>Strategic value:</strong> Essential for growth trajectory and peer scale comparisons.</div>
+<div class="frame-wrap">
+<!-- Example wired to the uploaded plot HTML. If the plot file lives in a subfolder, e.g. Plots/, change the path accordingly. -->
+<iframe class="plot" loading="lazy" src="A_01_A. Total Scholarly Output _2019_2025_.html" title="A. Total Scholarly Output (2019–2025)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="A">Open plot in new tab</button>
+<span class="pill">file: A_01_A. Total Scholarly Output _2019_2025_.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="B" id="B">
+<h2>B. Compound Annual Growth Rate (CAGR) in Publications</h2>
+<div class="meta">Category: Productivity</div>
+<div class="desc"><strong>What it measures:</strong> Average annual growth rate of publications across the 2019→2025 period.<br/><strong>Why it’s important:</strong> Signals sustained momentum versus volatility.<br/><strong>How to calculate / formula:</strong> CAGR = (Ending/Beginning)^(1/years) − 1. Example: [(Pubs2025 / Pubs2019)^(1/6)] − 1.<br/><strong>Strategic value:</strong> Assess sustainability; &gt;5% strong, &lt;0% decline.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> CAGR in publications (2019→2025).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="C_01_B. CAGR of Publications.html" title="B. CAGR in Publications (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="B">Open plot in new tab</button>
+<span class="pill">file: C_01_B. CAGR of Publications.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="C" id="C">
+<h2>C. Year-over-Year (YoY) Growth Rate</h2>
+<div class="meta">Category: Productivity</div>
+<div class="desc"><strong>What it measures:</strong> Percent change in publications from one year to the next.<br/><strong>Why it’s important:</strong> Detects volatility and inflection points masked by CAGR.<br/><strong>How to calculate / formula:</strong> YoY = (Pubs_N − Pubs_{N−1}) / Pubs_{N−1} × 100.<br/><strong>Strategic value:</strong> Explains peaks/valleys by year (funding, policy, pandemic).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="D_01_C. YoY Growth.html" title="C. YoY Growth (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="C">Open plot in new tab</button>
+<span class="pill">file: D_01_C. YoY Growth.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="D" id="D">
+<h2>D. Publications per Active Author</h2>
+<div class="meta">Category: Productivity</div>
+<div class="desc"><strong>What it measures:</strong> Average productivity per researcher per year.<br/><strong>Why it’s important:</strong> Separates growth from headcount vs. individual output; flags efficiency/mentorship needs.<br/><strong>How to calculate / formula:</strong> Using Dataset 2, count unique authors per year; divide total publications by active authors.<br/><strong>Strategic value:</strong> Low ratio → support/mentorship; very high → check quality balance.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="F_01_D. Publications per Active Author.html" title="D. Publications per Active Author (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="D">Open plot in new tab</button>
+<span class="pill">file: F_01_D. Publications per Active Author.html</span>
+</div>
+</div>
+</section>
+<!-- FIELD PRODUCTIVITY -->
+<section class="card" data-section="E" id="E">
+<h2>E. Publication Distribution by Field (ASJC/QS/THE)</h2>
+<div class="meta">Category: Field Productivity</div>
+<div class="desc"><strong>What it measures:</strong> Number and share of publications by research area (ASJC/QS/THE taxonomies).<br/><strong>Why it’s important:</strong> Reveals research profile and strategic focus areas.<br/><strong>How to calculate / formula:</strong> Group by field; compute counts and percentages by year and by university.<br/><strong>Strategic value:</strong> Identify strengths, gaps, and niches vs. peers.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Publication Distribution by Field (ASJC).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="G_01_E. Field Mix USFQ _2025_.html" title="E. Publication Distribution by Field (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="E">Open plot in new tab</button>
+<span class="pill">file: G_01_E. Field Mix USFQ _2025_.html</span>
+</div>
+</div>
+</section><section class="card" data-section="H" id="H">
+<h2>H. Field Concentration Index (HHI)</h2>
+<div class="meta">Category: Field Productivity</div>
+<div class="desc"><strong>What it measures:</strong> Degree of diversification vs. concentration across fields.<br/><strong>Why it’s important:</strong> Balanced portfolios reduce risk; concentration limits opportunities.<br/><strong>How to calculate / formula:</strong> HHI = sum of squared field shares; near 1 = concentrated; near 0 = diversified.<br/><strong>Strategic value:</strong> Guide to diversify or double down on core strengths.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="L_01_H. HHI by field _2025_.html" title="H. HHI (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="H">Open plot in new tab</button>
+<span class="pill">file: L_01_H. HHI by field _2025_.html</span>
+</div>
+</div>
+</section>
+<!-- IMPACT & QUALITY -->
+<section class="card" data-section="I" id="I">
+<h2>I. Field-Weighted Citation Impact (FWCI) — Average</h2>
+<div class="meta">Category: Impact</div>
+<div class="desc"><strong>What it measures:</strong> Citations relative to the global average in the same field and year.<br/><strong>Why it’s important:</strong> Primary quality metric; normalizes for field and age.<br/><strong>How to calculate / formula:</strong> Average FWCI across publications per university/year; 1.0 = world avg; &gt;1.0 above average.<br/><strong>Strategic value:</strong> Direct measure of quality and competitiveness.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Field-Weighted Citation Impact (FWCI) — Institutional Average.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="M_01_I. Average FWCI.html" title="I. FWCI Avg (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="I">Open plot in new tab</button>
+<span class="pill">file: M_01_I. Average FWCI.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="J" id="J">
+<h2>J. FWCI by Field</h2>
+<div class="meta">Category: Impact</div>
+<div class="desc"><strong>What it measures:</strong> Citation quality within specific disciplines.<br/><strong>Why it’s important:</strong> Strengths and weaknesses vary by field.<br/><strong>How to calculate / formula:</strong> Group by field; compute mean FWCI; compare across universities and over time.<br/><strong>Strategic value:</strong> Targets investments and improvements by field.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> FWCI by Field (latest year).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="O_01_J. USFQ FWCI by Field _2025_.html" title="J. FWCI by Field (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="J">Open plot in new tab</button>
+<span class="pill">file: O_01_J. USFQ FWCI by Field _2025_.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="K" id="K">
+<h2>K. Citations per Publication</h2>
+<div class="meta">Category: Impact</div>
+<div class="desc"><strong>What it measures:</strong> Total citations divided by number of publications.<br/><strong>Why it’s important:</strong> Simple benchmark; complements FWCI.<br/><strong>How to calculate / formula:</strong> Sum citations by university/year/field; divide by publications; consider age effects.<br/><strong>Strategic value:</strong> Easy for non-technical audiences (use with year filters).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="P_01_K. Citations per Publication.html" title="K. Citations per Pub (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="K">Open plot in new tab</button>
+<span class="pill">file: P_01_K. Citations per Publication.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="L" id="L">
+<h2>L. Outputs in Top Citation Percentiles</h2>
+<div class="meta">Category: Impact</div>
+<div class="desc"><strong>What it measures:</strong> Share of outputs in top 1%, 5%, 10%, 25% most-cited globally.<br/><strong>Why it’s important:</strong> Indicates breakthrough, high-impact research.<br/><strong>How to calculate / formula:</strong> Use 'Outputs in Top Citation Percentiles' from Dataset 2; compute % per band.<br/><strong>Strategic value:</strong> Excellence indicator (Top 10% &gt;15% is a strong target).</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Outputs in Top Citation Percentiles (Top 10%) — proxy.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="R_01_L. _ Outputs in Top 10_ _proxy_.html" title="L. Top Citation Percentiles (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="L">Open plot in new tab</button>
+<span class="pill">file: R_01_L. _ Outputs in Top 10_ _proxy_.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="M" id="M">
+<h2>M. h-index (Institution / Authors)</h2>
+<div class="meta">Category: Impact</div>
+<div class="desc"><strong>What it measures:</strong> h papers with ≥ h citations at institution or author level.<br/><strong>Why it’s important:</strong> Balances productivity and impact (long-career bias).<br/><strong>How to calculate / formula:</strong> Institutional: rank all papers by citations, find h ≈ rank = citations; Author: from Dataset 1.<br/><strong>Strategic value:</strong> Benchmark leaders; track change over time.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> h-index (Institutional, 2019–2025 window).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="S_01_M. Institutional h-index _window_.html" title="M. h-index (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="M">Open plot in new tab</button>
+<span class="pill">file: S_01_M. Institutional h-index _window_.html</span>
+</div>
+</div>
+</section>
+<!-- JOURNAL & OA -->
+<section class="card" data-section="N" id="N">
+<h2>N. SJR (SCImago) &amp; Percentile</h2>
+<div class="meta">Category: Journal / OA</div>
+<div class="desc"><strong>What it measures:</strong> Prestige of journals where authors publish.<br/><strong>Why it’s important:</strong> Higher SJR suggests stronger peer review/visibility.<br/><strong>How to calculate / formula:</strong> Average SJR percentile; compute % in Q1 (top 25%).<br/><strong>Strategic value:</strong> Raising Q1 share boosts reputation (target &gt;40%).</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> SJR (Percentile) — Average by Year.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="U_01_N. Avg SJR Percentile.html" title="N. SJR (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="N">Open plot in new tab</button>
+<span class="pill">file: U_01_N. Avg SJR Percentile.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="O" id="O">
+<h2>O. CiteScore Percentile</h2>
+<div class="meta">Category: Journal / OA</div>
+<div class="desc"><strong>What it measures:</strong> Journal impact metric complementing SJR.<br/><strong>Why it’s important:</strong> Useful for newer journals; cross-validates quality.<br/><strong>How to calculate / formula:</strong> Analyze like SJR; track percentile distributions over time.<br/><strong>Strategic value:</strong> Corroborates source quality assessment.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> CiteScore Percentile — Average by Year.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="V_01_O. Avg CiteScore Percentile.html" title="O. CiteScore (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="O">Open plot in new tab</button>
+<span class="pill">file: V_01_O. Avg CiteScore Percentile.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="P" id="P">
+<h2>P. SNIP</h2>
+<div class="meta">Category: Journal / OA</div>
+<div class="desc"><strong>What it measures:</strong> Citation potential normalized by field.<br/><strong>Why it’s important:</strong> Fair comparison across disciplines.<br/><strong>How to calculate / formula:</strong> Use journal SNIP at publication year; higher = higher impact per paper.<br/><strong>Strategic value:</strong> Helps compare high/low citation cultures.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> SNIP — Average by Year.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="X_01_P. SNIP _avg_.html" title="P. SNIP (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="P">Open plot in new tab</button>
+<span class="pill">file: X_01_P. SNIP _avg_.html</span>
+</div>
+</div>
+</section><!-- BROADER IMPACT -->
+<section class="card" data-section="R" id="R">
+<h2>R. Field-Weighted View Impact</h2>
+<div class="meta">Category: Broader Impact</div>
+<div class="desc"><strong>What it measures:</strong> Views/downloads relative to world average.<br/><strong>Why it’s important:</strong> Early indicator of future citations.<br/><strong>How to calculate / formula:</strong> Average FWVI from Dataset 2; compare with peers.<br/><strong>Strategic value:</strong> Predictive of later impact.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Field-Weighted View Impact (avg).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_01_R. Field-Weighted View Impact.html" title="R. FWVI (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="R">Open plot in new tab</button>
+<span class="pill">file: Z_01_R. Field-Weighted View Impact.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="S" id="S">
+<h2>S. Policy Citations</h2>
+<div class="meta">Category: Broader Impact</div>
+<div class="desc"><strong>What it measures:</strong> Citations of research in policy documents.<br/><strong>Why it’s important:</strong> Signals real-world application and societal relevance.<br/><strong>How to calculate / formula:</strong> Sum policy citations (Dataset 2).<br/><strong>Strategic value:</strong> Important for funding and reputation.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Policy Citations (sum).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_02_S. Policy Citations _sum_.html" title="S. Policy Citations (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="S">Open plot in new tab</button>
+<span class="pill">file: Z_02_S. Policy Citations _sum_.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="T" id="T">
+<h2>T. Patent Families</h2>
+<div class="meta">Category: Broader Impact</div>
+<div class="desc"><strong>What it measures:</strong> Publications linked to patented innovations.<br/><strong>Why it’s important:</strong> Technology transfer and commercialization potential.<br/><strong>How to calculate / formula:</strong> Sum patent families tied to outputs.<br/><strong>Strategic value:</strong> Shows applied research capacity.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Patent Families (sum).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_03_T. Patent Families _sum_.html" title="T. Patent Families (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="T">Open plot in new tab</button>
+<span class="pill">file: Z_03_T. Patent Families _sum_.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="U" id="U">
+<h2>U. SDG Alignment</h2>
+<div class="meta">Category: Broader Impact</div>
+<div class="desc"><strong>What it measures:</strong> Outputs linked to UN Sustainable Development Goals.<br/><strong>Why it’s important:</strong> Demonstrates social relevance and attracts mission-driven funding.<br/><strong>How to calculate / formula:</strong> Use SDG classifications in Dataset 2; counts/percentages by SDG.<br/><strong>Strategic value:</strong> Aligns work with global priorities.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> SDG Alignment (latest year, counts).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_04_U. USFQ SDGs _2025_.html" title="U. SDG Alignment (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="U">Open plot in new tab</button>
+<span class="pill">file: Z_04_U. USFQ SDGs _2025_.html</span>
+</div>
+</div>
+</section>
+<!-- COLLABORATION -->
+<section class="card" data-section="V" id="V">
+<h2>V. International Co-authorship Rate</h2>
+<div class="meta">Category: Collaboration</div>
+<div class="desc"><strong>What it measures:</strong> Share of outputs with authors from multiple countries.<br/><strong>Why it’s important:</strong> International work correlates with higher FWCI.<br/><strong>How to calculate / formula:</strong> % where 'Number of Countries/Regions' &gt; 1.<br/><strong>Strategic value:</strong> Guides internationalization strategy (benchmark ~40–60%).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_05_V. International Co-authorship Rate.html" title="V. International Co-authorship (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="V">Open plot in new tab</button>
+<span class="pill">file: Z_05_V. International Co-authorship Rate.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="W" id="W">
+<h2>W. Institutional Collaboration Rate</h2>
+<div class="meta">Category: Collaboration</div>
+<div class="desc"><strong>What it measures:</strong> Share of outputs with multiple institutions.<br/><strong>Why it’s important:</strong> Indicates network strength and resource sharing.<br/><strong>How to calculate / formula:</strong> % where 'Number of Institutions' &gt; 1.<br/><strong>Strategic value:</strong> Shows ecosystem integration.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_06_W. Institutional Collaboration Rate.html" title="W. Institutional Collaboration (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="W">Open plot in new tab</button>
+<span class="pill">file: Z_06_W. Institutional Collaboration Rate.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="X" id="X">
+<h2>X. Average Number of Co-authors</h2>
+<div class="meta">Category: Collaboration</div>
+<div class="desc"><strong>What it measures:</strong> Team size per publication by field.<br/><strong>Why it’s important:</strong> Field norms vary; larger teams can imply resources/collaboration.<br/><strong>How to calculate / formula:</strong> Average 'Number of Authors' by field/year.<br/><strong>Strategic value:</strong> Benchmark vs. field norms.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_07_X. Average _ of Authors.html" title="X. Avg # Co-authors (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="X">Open plot in new tab</button>
+<span class="pill">file: Z_07_X. Average _ of Authors.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="Y" id="Y">
+<h2>Y. International Collaboration Impact Premium</h2>
+<div class="meta">Category: Collaboration</div>
+<div class="desc"><strong>What it measures:</strong> FWCI difference: international vs. domestic-only outputs.<br/><strong>Why it’s important:</strong> Quantifies value of international partnerships.<br/><strong>How to calculate / formula:</strong> Mean FWCI (international) − Mean FWCI (domestic).<br/><strong>Strategic value:</strong> Evidence for investing in partnerships.</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_08_Y. Intl Collaboration Impact Premium.html" title="Y. Intl Collaboration Premium (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="Y">Open plot in new tab</button>
+<span class="pill">file: Z_08_Y. Intl Collaboration Impact Premium.html</span>
+</div>
+</div>
+</section>
+<!-- AUTHORS --><!-- TALENT --><!-- POSITIONING --><section class="card" data-section="AH" id="AH">
+<h2>AH. Relative Growth Index</h2>
+<div class="meta">Category: Strategic Positioning</div>
+<div class="desc"><strong>What it measures:</strong> USFQ growth vs. peer average growth.<br/><strong>Why it’s important:</strong> Contextualizes absolute growth.<br/><strong>How to calculate / formula:</strong> RGI = (USFQ CAGR) / (Avg CAGR of other 5). RGI&gt;1 outpacing peers.<br/><strong>Strategic value:</strong> Detects if pace is ahead or behind.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Relative Growth Index (RGI).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_09_AH. Relative Growth Index.html" title="AH. RGI (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="AH">Open plot in new tab</button>
+<span class="pill">file: Z_09_AH. Relative Growth Index.html</span>
+</div>
+</div>
+</section>
+<section class="card" data-section="AI" id="AI">
+<h2>AI. Quality-Adjusted Output</h2>
+<div class="meta">Category: Strategic Positioning</div>
+<div class="desc"><strong>What it measures:</strong> Volume weighted by impact.<br/><strong>Why it’s important:</strong> Fewer high-impact papers may beat more low-impact ones.<br/><strong>How to calculate / formula:</strong> Sum(Publication_i × FWCI_i) or Pubs × Avg FWCI.<br/><strong>Strategic value:</strong> Balances quantity and quality.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Quality-Adjusted Output (QAO).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_10_AI. Quality-Adjusted Output.html" title="AI. QAO (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="AI">Open plot in new tab</button>
+<span class="pill">file: Z_10_AI. Quality-Adjusted Output.html</span>
+</div>
+</div>
+</section>
+<!-- PORTFOLIO -->
+<section class="card" data-section="AJ" id="AJ">
+<h2>AJ. Topic Prominence Percentile</h2>
+<div class="meta">Category: Portfolio</div>
+<div class="desc"><strong>What it measures:</strong> Position in globally hot vs. cold topics.<br/><strong>Why it’s important:</strong> High-prominence topics boost visibility/funding.<br/><strong>How to calculate / formula:</strong> Use 'Topic Prominence Percentile' from Dataset 2; average and list &gt;75th.<br/><strong>Strategic value:</strong> Guide investments to high-momentum areas.</div><div class="note" style="margin:.25rem 0 0 0"><em>Note:</em> Topic Prominence Percentile (avg).</div>
+<div class="frame-wrap">
+<iframe class="plot" loading="lazy" src="Z_11_AJ. Topic Prominence Percentile _avg_.html" title="AJ. Topic Prominence (placeholder)"></iframe>
+<div class="frame-actions">
+<button class="btn" data-open-target="AJ">Open plot in new tab</button>
+<span class="pill">file: Z_11_AJ. Topic Prominence Percentile _avg_.html</span>
+</div>
+</div>
+</section><footer>
+
+        </div>
+</footer>
+</main>
+</div>
+<script>
+    // Simple TOC filter
+    const input = document.getElementById('tocSearch');
+    const toc = document.getElementById('toc');
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase();
+      toc.querySelectorAll('a').forEach(a => {
+        a.style.display = a.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+      });
+    });
+
+    // Wire "Open plot" buttons to open the iframe src for that section
+    document.querySelectorAll('.btn[data-open-target]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.getAttribute('data-open-target');
+        const sec = document.querySelector('section[data-section="' + code + '"]');
+        const iframe = sec ? sec.querySelector('iframe.plot') : null;
+        if (iframe && iframe.src) window.open(iframe.src, '_blank');
+        else alert('Set the plot HTML file first (edit the iframe src).');
+      });
+    });
+  </script>
+</body>
+</html>
